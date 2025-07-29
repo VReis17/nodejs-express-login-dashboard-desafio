@@ -137,3 +137,12 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Ignore node_modules, .env, and dist directory
+node_modules/
+.env
+*.log
+dist/
+
+# Project specific ignores
+express-login-dashboard-backend/data/ 
