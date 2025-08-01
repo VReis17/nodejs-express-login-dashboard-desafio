@@ -12,6 +12,7 @@ describe('Login', () => {
 
     cy.get('#E-mail').click().type('admin')
     cy.contains('button', 'Entrar').click() 
+    
     // Assert
     cy.url().should('include', '/dashboard')        
     cy.get('.alert-success').should('contain', 'Login realizado com sucesso')
