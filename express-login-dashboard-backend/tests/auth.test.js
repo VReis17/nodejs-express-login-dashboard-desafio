@@ -37,4 +37,43 @@ describe('Testes de Autenticação', () => {
       expect(loginResponse.body.user).to.have.property('email', userData.email);
     });
   });
+
+  describe('Login inválido', () => {
+    it('deve retornar erro ao tentar logar com credenciais incorretas', async () => {
+      const userData = {
+        name: 'Maria Santos',
+        email: 'maria@teste.com',
+        password: '123456'
+      };
+
+      await request(app)
+        .post('/api/auth/register')
+        .send(userData)
+        .expect(201);
+
+      const loginResponse = await request(app)
+        .post('/api/auth/login')
+        .send({
+          email: userData.email,
+          password: 'senha_incorreta'
+        })
+        .expect(401);
+
+      expect(loginResponse.body.success).to.be.false;
+      expect(loginResponse.body.message).to.equal('Senha incorreta');
+    });
+
+    it('deve retornar erro ao tentar logar com usuário inexistente', async () => {
+      const loginResponse = await request(app)
+        .post('/api/auth/login')
+        .send({
+          email: 'usuario_inexistente@teste.com',
+          password: '123456'
+        })
+        .expect(404);
+
+      expect(loginResponse.body.success).to.be.false;
+      expect(loginResponse.body.message).to.equal('Usuário não encontrado');
+    });
+  });
 }); 
