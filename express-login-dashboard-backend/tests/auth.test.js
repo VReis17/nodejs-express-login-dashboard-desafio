@@ -76,4 +76,77 @@ describe('Testes de Autenticação', () => {
       expect(loginResponse.body.message).to.equal('Usuário não encontrado');
     });
   });
+
+  describe('Bloqueio de senha', () => {
+    it('deve bloquear usuário após 3 tentativas de login com senha errada', async () => {
+      const userData = {
+        name: 'Pedro Costa',
+        email: 'pedro@teste.com',
+        password: '123456'
+      };
+
+      await request(app)
+        .post('/api/auth/register')
+        .send(userData)
+        .expect(201);
+
+      for (let i = 0; i < 3; i++) {
+        const loginResponse = await request(app)
+          .post('/api/auth/login')
+          .send({
+            email: userData.email,
+            password: 'senha_incorreta'
+          })
+          .expect(401);
+
+        expect(loginResponse.body.success).to.be.false;
+        expect(loginResponse.body.message).to.equal('Senha incorreta');
+      }
+
+      const blockedLoginResponse = await request(app)
+        .post('/api/auth/login')
+        .send({
+          email: userData.email,
+          password: userData.password
+        })
+        .expect(423);
+
+      expect(blockedLoginResponse.body.success).to.be.false;
+      expect(blockedLoginResponse.body.message).to.equal('Usuário bloqueado');
+    });
+
+    it('deve permitir login após 2 tentativas com senha errada e 1 com senha correta', async () => {
+      const userData = {
+        name: 'Ana Silva',
+        email: 'ana@teste.com',
+        password: '123456'
+      };
+
+      await request(app)
+        .post('/api/auth/register')
+        .send(userData)
+        .expect(201);
+
+      for (let i = 0; i < 2; i++) {
+        await request(app)
+          .post('/api/auth/login')
+          .send({
+            email: userData.email,
+            password: 'senha_incorreta'
+          })
+          .expect(401);
+      }
+
+      const successfulLoginResponse = await request(app)
+        .post('/api/auth/login')
+        .send({
+          email: userData.email,
+          password: userData.password
+        })
+        .expect(200);
+
+      expect(successfulLoginResponse.body.success).to.be.true;
+      expect(successfulLoginResponse.body.message).to.equal('Login realizado com sucesso');
+    });
+  });
 }); 
