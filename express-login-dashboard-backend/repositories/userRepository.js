@@ -135,6 +135,14 @@ const userRepository = {
       loginAttempts: user.loginAttempts,
       createdAt: user.createdAt
     }));
+  },
+
+  /**
+   * Limpar todos os usuários (para testes)
+   */
+  async clearAll() {
+    await this.initialize();
+    await this.writeUsers([]);
   }
 };
 
