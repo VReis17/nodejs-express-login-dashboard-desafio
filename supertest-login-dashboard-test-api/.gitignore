@@ -1,0 +1,31 @@
+# Dependências
+node_modules/
+
+# Relatórios de teste (gerados automaticamente)
+reports/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Arquivos de ambiente
+.env
+.env.local
+.env.production
+
+# Arquivos temporários
+*.tmp
+*.temp
+
+# Coverage
+coverage/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db 
