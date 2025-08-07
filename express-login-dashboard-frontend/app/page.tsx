@@ -7,26 +7,41 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Eye, EyeOff } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Eye, EyeOff, AlertCircle } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { apiService, tokenManager, userManager, type ApiError } from "@/lib/api"
+import { useRouter } from "next/navigation"
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string>("")
+  const router = useRouter()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    setError("")
 
-    // Simular login
-    setTimeout(() => {
+    try {
+      const response = await apiService.login(email, password)
+      
+      // Salvar token e dados do usuário
+      tokenManager.setToken(response.token)
+      userManager.setUser(response.user)
+      
+      // Redirecionar para o dashboard
+      router.push("/dashboard")
+    } catch (err) {
+      const apiError = err as ApiError
+      setError(apiError.message || "Erro ao fazer login")
+    } finally {
       setIsLoading(false)
-      // Redirecionar para o dashboard ao invés de mostrar alert
-      window.location.href = "/dashboard"
-    }, 2000)
+    }
   }
 
   return (
@@ -46,6 +61,13 @@ export default function LoginPage() {
 
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-6">
+            {error && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-medium text-gray-700">
                 E-mail

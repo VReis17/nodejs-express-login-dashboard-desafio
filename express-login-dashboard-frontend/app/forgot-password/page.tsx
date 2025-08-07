@@ -7,26 +7,42 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowLeft, Mail } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { ArrowLeft, Mail, AlertCircle, CheckCircle } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { apiService, type ApiError } from "@/lib/api"
 import { useRouter } from "next/navigation"
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
+  const [success, setSuccess] = useState("")
+  const [resetCode, setResetCode] = useState("")
   const router = useRouter()
 
   const handleSendCode = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    setError("")
+    setSuccess("")
 
-    // Simular envio do código
-    setTimeout(() => {
+    try {
+      const response = await apiService.forgotPassword(email)
+      setResetCode(response.resetCode)
+      setSuccess(`Código de recuperação enviado: ${response.resetCode}`)
+      
+      // Redirecionar para reset-password após 3 segundos
+      setTimeout(() => {
+        router.push(`/reset-password?email=${encodeURIComponent(email)}`)
+      }, 3000)
+    } catch (err) {
+      const apiError = err as ApiError
+      setError(apiError.message || "Erro ao enviar código de recuperação")
+    } finally {
       setIsLoading(false)
-      // Redirecionar para a página de reset com o email
-      router.push(`/reset-password?email=${encodeURIComponent(email)}`)
-    }, 2000)
+    }
   }
 
   return (
@@ -48,6 +64,20 @@ export default function ForgotPasswordPage() {
 
         <CardContent>
           <form onSubmit={handleSendCode} className="space-y-6">
+            {error && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            {success && (
+              <Alert>
+                <CheckCircle className="h-4 w-4" />
+                <AlertDescription>{success}</AlertDescription>
+              </Alert>
+            )}
+
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-medium text-gray-700">
                 E-mail
