@@ -7,9 +7,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Eye, EyeOff, ArrowLeft } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Eye, EyeOff, ArrowLeft, AlertCircle, CheckCircle } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { apiService, type ApiError } from "@/lib/api"
+import { useRouter } from "next/navigation"
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -22,10 +25,13 @@ export default function RegisterPage() {
   })
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [success, setSuccess] = useState("")
+  const router = useRouter()
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
+    setSuccess("")
 
     if (formData.password !== formData.confirmPassword) {
       setError("As senhas não coincidem")
@@ -39,11 +45,20 @@ export default function RegisterPage() {
 
     setIsLoading(true)
 
-    // Simular cadastro
-    setTimeout(() => {
+    try {
+      await apiService.register(formData.name, formData.email, formData.password)
+      setSuccess("Cadastro realizado com sucesso! Redirecionando para o login...")
+      
+      // Redirecionar para login após 2 segundos
+      setTimeout(() => {
+        router.push("/")
+      }, 2000)
+    } catch (err) {
+      const apiError = err as ApiError
+      setError(apiError.message || "Erro ao criar conta")
+    } finally {
       setIsLoading(false)
-      alert("Cadastro realizado com sucesso!")
-    }, 2000)
+    }
   }
 
   const handleInputChange = (field: string, value: string) => {
@@ -67,6 +82,20 @@ export default function RegisterPage() {
 
         <CardContent>
           <form onSubmit={handleRegister} className="space-y-6">
+            {error && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            {success && (
+              <Alert>
+                <CheckCircle className="h-4 w-4" />
+                <AlertDescription>{success}</AlertDescription>
+              </Alert>
+            )}
+
             <div className="space-y-2">
               <Label htmlFor="name" className="text-sm font-medium text-gray-700">
                 Nome completo

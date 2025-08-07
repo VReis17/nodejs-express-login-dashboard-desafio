@@ -5,8 +5,11 @@ import type React from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { LogOut, Clock, Zap, Layout, TrendingUp, Gauge } from "lucide-react"
+import { LogOut, Clock, Zap, Layout, TrendingUp, Gauge, User } from "lucide-react"
 import Image from "next/image"
+import { userManager, tokenManager, logout } from "@/lib/api"
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 
 interface MetricCardProps {
   title: string
@@ -46,6 +49,20 @@ function MetricCard({ title, description, importance, idealTime, icon, color }: 
 }
 
 export default function DashboardPage() {
+  const [user, setUser] = useState<any>(null)
+  const router = useRouter()
+
+  useEffect(() => {
+    // Verificar se está autenticado
+    if (!tokenManager.isAuthenticated()) {
+      router.push("/")
+      return
+    }
+
+    // Obter dados do usuário
+    const userData = userManager.getUser()
+    setUser(userData)
+  }, [router])
   const metrics = [
     {
       title: "FCP (First Contentful Paint)",
@@ -92,8 +109,7 @@ export default function DashboardPage() {
   ]
 
   const handleLogout = () => {
-    // Simular logout
-    window.location.href = "/"
+    logout()
   }
 
   return (
@@ -106,6 +122,12 @@ export default function DashboardPage() {
               <div className="relative w-32 h-8">
                 <Image src="/logo-m20.png" alt="Mentoria 2.0 Logo" fill className="object-contain" priority />
               </div>
+              {user && (
+                <div className="flex items-center gap-2 text-white">
+                  <User size={16} />
+                  <span className="text-sm">Bem-vindo, {user.name}</span>
+                </div>
+              )}
             </div>
             <Button
               onClick={handleLogout}

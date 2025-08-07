@@ -7,9 +7,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowLeft, Eye, EyeOff, Shield, Mail } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { ArrowLeft, Eye, EyeOff, Shield, Mail, AlertCircle, CheckCircle } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { apiService, type ApiError } from "@/lib/api"
 import { useRouter, useSearchParams } from "next/navigation"
 
 export default function ResetPasswordPage() {
@@ -21,6 +23,7 @@ export default function ResetPasswordPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [success, setSuccess] = useState("")
 
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -35,6 +38,7 @@ export default function ResetPasswordPage() {
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
+    setSuccess("")
 
     if (newPassword !== confirmPassword) {
       setError("As senhas não coincidem")
@@ -48,12 +52,20 @@ export default function ResetPasswordPage() {
 
     setIsLoading(true)
 
-    // Simular reset da senha
-    setTimeout(() => {
+    try {
+      await apiService.resetPassword(email, code, newPassword)
+      setSuccess("Senha alterada com sucesso! Redirecionando para o login...")
+      
+      // Redirecionar para login após 2 segundos
+      setTimeout(() => {
+        router.push("/")
+      }, 2000)
+    } catch (err) {
+      const apiError = err as ApiError
+      setError(apiError.message || "Erro ao redefinir senha")
+    } finally {
       setIsLoading(false)
-      alert("Senha alterada com sucesso!")
-      router.push("/")
-    }, 2000)
+    }
   }
 
   return (
@@ -75,6 +87,20 @@ export default function ResetPasswordPage() {
 
         <CardContent>
           <form onSubmit={handleResetPassword} className="space-y-6">
+            {error && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            {success && (
+              <Alert>
+                <CheckCircle className="h-4 w-4" />
+                <AlertDescription>{success}</AlertDescription>
+              </Alert>
+            )}
+
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-medium text-gray-700">
                 E-mail
