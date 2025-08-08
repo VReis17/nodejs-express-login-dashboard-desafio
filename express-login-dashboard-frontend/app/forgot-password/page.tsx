@@ -36,7 +36,7 @@ export default function ForgotPasswordPage() {
       // Redirecionar para reset-password após 3 segundos
       setTimeout(() => {
         router.push(`/reset-password?email=${encodeURIComponent(email)}`)
-      }, 3000)
+      }, 5000)
     } catch (err) {
       const apiError = err as ApiError
       setError(apiError.message || "Erro ao enviar código de recuperação")
