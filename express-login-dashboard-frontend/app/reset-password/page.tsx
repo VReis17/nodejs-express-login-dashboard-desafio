@@ -120,11 +120,11 @@ export default function ResetPasswordPage() {
                 <Input
                   id="code"
                   type="text"
-                  placeholder="Digite o código de 6 dígitos"
+                  placeholder="Digite o código de 9 dígitos"
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
                   required
-                  maxLength={6}
+                  maxLength={9}
                   className="h-11 pl-10"
                 />
               </div>
