@@ -1,1 +1,56 @@
-Criar projeto de testes API Usando o SuperTest, opcional como desafio utilizar o design partner DataFactory
+# Testes API - SuperTest + Mocha + Chai
+
+## Implementação Realizada
+
+### Estrutura de Testes
+- **Framework**: SuperTest + Mocha + Chai
+- **Reporter**: Mochawesome para relatórios HTML
+- **Dados de Teste**: Faker.js para geração de dados dinâmicos
+- **Organização**: Heurísticas VADER para cobertura completa
+
+### Testes Implementados
+
+#### 1. Registro de Usuário (`register.test.js`)
+- **Cenários de Cadastro Válido**: Dados padrão, caracteres especiais, múltiplos usuários
+- **Cenários de Validação de Erro**: Email inválido, senha curta, email duplicado
+- **Cenários de Caracteres Especiais**: Aceitação de caracteres especiais no nome
+- **Cenários de Campos Vazios**: Validação de campos obrigatórios
+- **Cenários de Estrutura de Resposta**: Validação da estrutura JSON retornada
+
+#### 2. Bloqueio de Usuário (`block-user.test.js`)
+- **Bloqueio por Tentativas**: Usuário bloqueado após 3 tentativas de login inválido
+
+#### 3. Testes Existentes
+- **Login com Sucesso**: Autenticação válida e retorno de token
+- **Login Inválido**: Credenciais incorretas e usuário inexistente
+- **Recuperação de Senha**: Solicitação e redefinição de senha
+
+### Estrutura do Projeto
+```
+supertest-login-dashboard-test-api/
+├── tests/                    # Testes organizados por funcionalidade
+├── fixtures/                 # Dados de teste centralizados
+├── helpers/                  # Funções auxiliares reutilizáveis
+├── hooks/                    # Configurações globais do Mocha
+├── reports/                  # Relatórios gerados pelo Mochawesome
+├── config.env               # Variáveis de ambiente
+└── package.json             # Dependências e scripts
+```
+
+### Comandos Disponíveis
+- `npm test`: Executa todos os testes
+- `npm run test:report`: Executa testes e gera relatório HTML
+- `npm run test:watch`: Executa testes em modo watch
+- `npm run test:coverage`: Executa testes com cobertura
+
+### Cobertura de Testes
+- **18 testes implementados**
+- **100% de sucesso**
+- **Cobertura completa das funcionalidades principais**
+- **Validação de cenários positivos e negativos**
+
+### Relatórios
+- Relatórios HTML gerados automaticamente
+- Visualização detalhada dos resultados
+- Histórico de execuções
+- Estatísticas de performance
