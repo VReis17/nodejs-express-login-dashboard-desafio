@@ -145,4 +145,7 @@ node_modules/
 dist/
 
 # Project specific ignores
-express-login-dashboard-backend/data/ 
+express-login-dashboard-backend/data/
+
+#Arquivo package.json
+package-lock.json
