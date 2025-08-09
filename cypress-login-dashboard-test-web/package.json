@@ -1,0 +1,19 @@
+{
+  "name": "cypress-login-dashboard-test-web",
+  "version": "1.0.0",
+  "description": "Projeto de teste para o login do dashboard da mentoria de teste de software",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Vitor Reis França",
+  "devDependencies": {
+    "cypress": "^12.17.4",
+    "cypress-mochawesome-reporter": "4.0.0"
+  },
+  "dependencies": {
+    "cypress-login-dashboard-test-web": "file:"
+  },
+  "license": "ISC"
+}
